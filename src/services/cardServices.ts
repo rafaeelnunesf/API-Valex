@@ -1,6 +1,8 @@
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import * as cardRepository from "../repositories/cardRepository.js";
+import * as paymentRepository from "../repositories/paymentRepository.js";
+import * as rechargeRepository from "../repositories/rechargeRepository.js";
 import { compareHash, createHash } from "../utils/hashUtils.js";
 
 export function generateNewCardData(flag: string) {
@@ -63,4 +65,16 @@ export async function createPassword(
   const hashedPassword = createHash(password);
   const updatedCardData = { ...cardData, password: hashedPassword };
   cardRepository.update(cardId, updatedCardData);
+}
+
+export async function getPayments(cardId: number) {
+  const payments = await paymentRepository.findByCardId(cardId);
+  console.log("payments :>> ", payments);
+  return payments;
+}
+
+export async function getRecharges(cardId: number) {
+  const recharges = await rechargeRepository.findByCardId(cardId);
+  console.log("recharges :>> ", recharges);
+  return recharges;
 }

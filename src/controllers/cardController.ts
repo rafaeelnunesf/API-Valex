@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as employeeServices from "../services/employeeServices.js";
 import * as cardServices from "../services/cardServices.js";
+
 export async function createCard(req: Request, res: Response) {
   const { type } = req.body;
   const { employee } = res.locals;
@@ -27,6 +28,7 @@ export async function createCard(req: Request, res: Response) {
 
   res.sendStatus(201);
 }
+
 export async function activateCard(req: Request, res: Response) {
   const { cvv, password } = req.body;
   const cardId = parseInt(req.params.cardId);
@@ -37,6 +39,15 @@ export async function activateCard(req: Request, res: Response) {
   await cardServices.checkCardExpirationDate(cardData.expirationDate);
   await cardServices.verifyPasswordLength(password);
   await cardServices.createPassword(cardId, cardData, password);
+
+  res.sendStatus(200);
+}
+
+export async function viewCardBalance(req: Request, res: Response) {
+  const cardId = parseInt(req.params.cardId);
+  const cardData = await cardServices.checkCardExistence(cardId);
+  const payments = await cardServices.getPayments(cardId);
+  const recharges = await cardServices.getRecharges(cardId);
 
   res.sendStatus(200);
 }
