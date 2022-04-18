@@ -1,12 +1,9 @@
 import { Router } from "express";
-import {
-  activateCard,
-  createCard,
-  viewCardBalance,
-} from "../controllers/cardController.js";
+import * as cardController from "../controllers/cardController.js";
 import validateCompany from "../middlewares/validateCompany.js";
-import validateCardSchemaMiddleware from "../middlewares/validateCardSchemaMiddleware.js";
 import validateemployee from "../middlewares/validateEmployee.js";
+import validateSchemaMiddleware from "../middlewares/validateSchemaMiddleware.js";
+import cardSchema from "../schemas/cardSchema.js";
 
 const cardRouter = Router();
 
@@ -14,18 +11,18 @@ cardRouter.post(
   "/employees/:employeeId/create-card",
   validateCompany,
   validateemployee,
-  validateCardSchemaMiddleware,
-  createCard
+  validateSchemaMiddleware(cardSchema),
+  cardController.createCard
 );
 cardRouter.patch(
   "/employees/:employeeId/card-activation/:cardId",
   validateemployee,
-  activateCard
+  cardController.activateCard
 );
 cardRouter.get(
   "/employees/:employeeId/card-balance/:cardId",
   validateemployee,
-  viewCardBalance
+  cardController.viewCardBalance
 );
 
 export default cardRouter;
