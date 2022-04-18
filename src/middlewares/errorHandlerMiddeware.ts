@@ -6,6 +6,7 @@ export default function errorHandlerMiddleware(
   res: Response,
   next: NextFunction
 ) {
+  console.log(error);
   if (error.type === "not_found")
     return res.status(404).send(error.message ? error.message : "Not found!");
   if (error.type === "unauthorized")

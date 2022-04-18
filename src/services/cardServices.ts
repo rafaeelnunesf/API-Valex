@@ -39,14 +39,18 @@ export async function checkCardExpirationDate(expirationDate: string) {
     throw { type: "bad_request", message: "This card is expired!" };
 }
 
-export async function checkIfPasswordIsNull(password: string) {
-  if (password !== null)
-    throw { type: "bad_request", message: "This card is already activated!" };
-}
-
 export async function verifyCVV(cvvHashed: string, cvv: string) {
   const validation = compareHash(cvv, cvvHashed);
   if (!validation) throw { type: "unauthorized", message: "CVV is incorrect!" };
+}
+
+export async function verifiyPassword(
+  passwordHashed: string,
+  password: string
+) {
+  const validation = compareHash(password, passwordHashed);
+  if (!validation)
+    throw { type: "unauthorized", message: "The password is incorrect!" };
 }
 
 export async function verifyPasswordLength(password: string) {
@@ -67,14 +71,34 @@ export async function createPassword(
   cardRepository.update(cardId, updatedCardData);
 }
 
-export async function getPayments(cardId: number) {
-  const payments = await paymentRepository.findByCardId(cardId);
-  console.log("payments :>> ", payments);
-  return payments;
+export async function verifyIfCardIsActivated(
+  password: string,
+  activity: string
+) {
+  if (password === null && activity === "payment")
+    throw {
+      type: "bad_request",
+      message: "This card is already activated!",
+    };
+  if (password !== null && activity === "activation")
+    throw {
+      type: "bad_request",
+      message: "This card is already activated!",
+    };
+  if (!activity)
+    throw {
+      type: "bad_request",
+      message: "The activity must be payment or activation",
+    };
 }
 
-export async function getRecharges(cardId: number) {
-  const recharges = await rechargeRepository.findByCardId(cardId);
-  console.log("recharges :>> ", recharges);
-  return recharges;
+export async function cardBalance(cardId: number) {
+  const paymentsResult = await paymentRepository.findByCardId(cardId);
+  const rechargesResult = await rechargeRepository.findByCardId(cardId);
+
+  let recharges = 0;
+  let payments = 0;
+  paymentsResult.map(({ amount }) => (payments += amount));
+  rechargesResult.map(({ amount }) => (recharges += amount));
+  return recharges - payments;
 }
