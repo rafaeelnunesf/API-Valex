@@ -14,5 +14,11 @@ export default function errorHandlerMiddleware(
       .send(error.message ? error.message : "Unauthorized!");
   if (error.type === "conflict")
     return res.status(409).send(error.message ? error.message : "Conflict!");
+  if (error.type === "bad_request")
+    return res.status(400).send(error.message ? error.message : "Bad Request!");
+  if (error.type === "unprocessable_entity")
+    return res
+      .status(422)
+      .send(error.message ? error.message : "Unprocessable Entity!");
   res.sendStatus(500);
 }
