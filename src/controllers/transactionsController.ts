@@ -20,7 +20,7 @@ export async function addPayment(req: Request, res: Response) {
   const businessData = await businessServices.verifyBusinessExistence(
     businessId
   );
-  const balance = await cardServices.cardBalance(cardId);
+  const { balance } = await cardServices.balanceAndTransactions(cardId);
 
   await cardServices.checkCardExpirationDate(cardData.expirationDate);
   await cardServices.verifiyPassword(cardData.password, password);

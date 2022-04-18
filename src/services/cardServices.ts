@@ -92,13 +92,19 @@ export async function verifyIfCardIsActivated(
     };
 }
 
-export async function cardBalance(cardId: number) {
+export async function balanceAndTransactions(cardId: number) {
   const paymentsResult = await paymentRepository.findByCardId(cardId);
   const rechargesResult = await rechargeRepository.findByCardId(cardId);
 
   let recharges = 0;
   let payments = 0;
+
   paymentsResult.map(({ amount }) => (payments += amount));
   rechargesResult.map(({ amount }) => (recharges += amount));
-  return recharges - payments;
+
+  return {
+    balance: recharges - payments,
+    transactions: paymentsResult,
+    recharges: rechargesResult,
+  };
 }

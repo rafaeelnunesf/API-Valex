@@ -45,9 +45,8 @@ export async function activateCard(req: Request, res: Response) {
 
 export async function viewCardBalance(req: Request, res: Response) {
   const cardId = parseInt(req.params.cardId);
-  const cardData = await cardServices.checkCardExistence(cardId);
-  const balance = await cardServices.cardBalance(cardId);
-  console.log("balance :>> ", balance);
+  await cardServices.checkCardExistence(cardId);
+  const transactions = await cardServices.balanceAndTransactions(cardId);
 
-  res.sendStatus(200);
+  res.status(200).send(transactions);
 }
